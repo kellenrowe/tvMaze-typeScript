@@ -12767,6 +12767,7 @@ var BASE_URL = "http://api.tvmaze.com/";
 var DEFAULT_IMG = "https://www.southwestjournal.com/wp-content/uploads/2018/11/shutterstock_1075355216.jpg";
 var $showsList = $("#showsList");
 var $episodesArea = $("#episodesArea");
+var $episodesList = $("#episodesList");
 var $searchForm = $("#searchForm");
 /** Given a search term, search for tv shows that match that query.
  *
@@ -12864,11 +12865,11 @@ function getEpisodesOfShow(id) {
 /** Provided with an array of episodes info,
  *  populates it into the #episodesList part of the DOM. */
 function populateEpisodes(episodes) {
-    $episodesArea.empty();
+    $episodesList.empty();
     for (var _i = 0, episodes_1 = episodes; _i < episodes_1.length; _i++) {
         var episode = episodes_1[_i];
         var $episode = $("\n      <li>\n        " + episode.name + " (season " + episode.season + ", number " + episode.number + ")\n      </li>");
-        $episodesArea.append($episode);
+        $episodesList.append($episode);
     }
     $episodesArea.show();
 }

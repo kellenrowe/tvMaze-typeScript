@@ -7,6 +7,7 @@ const DEFAULT_IMG: string =
 
 const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
+const $episodesList = $("#episodesList");
 const $searchForm = $("#searchForm");
 
 type Show = {
@@ -109,7 +110,7 @@ async function getEpisodesOfShow(id: number) : Promise<Episode[]> {
 /** Provided with an array of episodes info, 
  *  populates it into the #episodesList part of the DOM. */
 function populateEpisodes(episodes: Episode[]) : void {
-  $episodesArea.empty();
+  $episodesList.empty();
 
   for(let episode of episodes) {
     let $episode = $(`
@@ -117,7 +118,7 @@ function populateEpisodes(episodes: Episode[]) : void {
         ${episode.name} (season ${episode.season}, number ${episode.number})
       </li>`
     );
-    $episodesArea.append($episode);
+    $episodesList.append($episode);
   }
   $episodesArea.show();
 }
