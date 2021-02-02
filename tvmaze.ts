@@ -13,7 +13,7 @@ type Show = {
   id: number,
   name: string,
   summary: string,
-  image: string
+  image: { medium?: string, original?: string }
 }
 
 type Episode = {
@@ -22,6 +22,7 @@ type Episode = {
   season: string,
   number: string
 }
+
 
 /** Given a search term, search for tv shows that match that query.
  *
@@ -33,7 +34,7 @@ async function getShowsByTerm(term: string): Promise<Show[]> {
 
   let response = await axios.get(`${BASE_URL}search/shows?q=${term}`);
 
-  let shows: Show[] = response.data.map(s => ({
+  let shows: Show[] = response.data.map((s: {show: Show}) => ({
     id: s.show.id,
     name: s.show.name,
     summary: s.show.summary,
@@ -45,7 +46,6 @@ async function getShowsByTerm(term: string): Promise<Show[]> {
 
 
 /** Given list of shows, create markup for each and to DOM */
-
 function populateShows(shows : Show[]) : void {
   $showsList.empty();
 
@@ -75,17 +75,15 @@ function populateShows(shows : Show[]) : void {
 /** Handle search form submission: get shows from API and display.
  *    Hide episodes area (that only gets shown if they ask for episodes)
  */
-
 async function searchForShowAndDisplay() {
   const term = String($("#searchForm-term").val());
-  // We know that term will always be a string
   const shows = await getShowsByTerm(term);
 
   $episodesArea.hide();
   populateShows(shows);
 }
 
-$searchForm.on("submit", async function (evt) {
+$searchForm.on("submit", async function (evt: JQuery.SubmitEvent) {
   evt.preventDefault();
   await searchForShowAndDisplay();
 });
@@ -94,11 +92,10 @@ $searchForm.on("submit", async function (evt) {
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
-
 async function getEpisodesOfShow(id: number) : Promise<Episode[]> {
   let response = await axios.get(`${BASE_URL}shows/${id}/episodes`);
 
-  let episodes: Episode[] = response.data.map(e => ({
+  let episodes: Episode[] = response.data.map((e: Episode) => ({
     id: e.id,
     name: e.name,
     season: e.season,
@@ -108,9 +105,9 @@ async function getEpisodesOfShow(id: number) : Promise<Episode[]> {
   return episodes;
 }
 
+
 /** Provided with an array of episodes info, 
  *  populates it into the #episodesList part of the DOM. */
-
 function populateEpisodes(episodes: Episode[]) : void {
   $episodesArea.empty();
 
@@ -125,12 +122,13 @@ function populateEpisodes(episodes: Episode[]) : void {
   $episodesArea.show();
 }
 
+
 /** Provided with evt from the $showsList event listener 
  *  identifies id of show and calls to:
  *      getEpisodesOfShow &
  *      populateEpisodes
 */
-async function searchForEpisodesAndDisplay(evt) {
+async function searchForEpisodesAndDisplay(evt: JQuery.ClickEvent) {
   let $targetBtn = $(evt.target);
   let id: number = +$targetBtn.closest('.Show').data("show-id");
   let episodes: Episode[] = await getEpisodesOfShow(id);
