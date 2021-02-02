@@ -77,7 +77,7 @@ function populateShows(shows : Show[]) : void {
  */
 
 async function searchForShowAndDisplay() {
-  const term = $("#searchForm-term").val();
+  const term = String($("#searchForm-term").val());
   // We know that term will always be a string
   const shows = await getShowsByTerm(term);
 
@@ -122,12 +122,19 @@ function populateEpisodes(episodes: Episode[]) : void {
     );
     $episodesArea.append($episode);
   }
+  $episodesArea.show();
 }
 
-/**  */
-
-async function searchForEpisodesAndDisplay() {
-  
+/** Provided with evt from the $showsList event listener 
+ *  identifies id of show and calls to:
+ *      getEpisodesOfShow &
+ *      populateEpisodes
+*/
+async function searchForEpisodesAndDisplay(evt) {
+  let $targetBtn = $(evt.target);
+  let id: number = +$targetBtn.closest('.Show').data("show-id");
+  let episodes: Episode[] = await getEpisodesOfShow(id);
+  populateEpisodes(episodes);
 }
 
 $showsList.on("click", ".Show-getEpisodes", searchForEpisodesAndDisplay);

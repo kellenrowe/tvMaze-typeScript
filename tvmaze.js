@@ -12814,7 +12814,7 @@ function searchForShowAndDisplay() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    term = $("#searchForm-term").val();
+                    term = String($("#searchForm-term").val());
                     return [4 /*yield*/, getShowsByTerm(term)];
                 case 1:
                     shows = _a.sent();
@@ -12870,12 +12870,27 @@ function populateEpisodes(episodes) {
         var $episode = $("\n      <li>\n        " + episode.name + " (season " + episode.season + ", number " + episode.number + ")\n      </li>");
         $episodesArea.append($episode);
     }
+    $episodesArea.show();
 }
-/**  */
-function searchForEpisodesAndDisplay() {
+/** Provided with evt from the $showsList event listener
+ *  identifies id of show and calls to:
+ *      getEpisodesOfShow &
+ *      populateEpisodes
+*/
+function searchForEpisodesAndDisplay(evt) {
     return __awaiter(this, void 0, void 0, function () {
+        var $targetBtn, id, episodes;
         return __generator(this, function (_a) {
-            return [2 /*return*/];
+            switch (_a.label) {
+                case 0:
+                    $targetBtn = $(evt.target);
+                    id = +$targetBtn.closest('.Show').data("show-id");
+                    return [4 /*yield*/, getEpisodesOfShow(id)];
+                case 1:
+                    episodes = _a.sent();
+                    populateEpisodes(episodes);
+                    return [2 /*return*/];
+            }
         });
     });
 }
