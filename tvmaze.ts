@@ -16,6 +16,13 @@ type Show = {
   image: string
 }
 
+type Episode = {
+  id: number,
+  name: string,
+  season: string,
+  number: string
+}
+
 /** Given a search term, search for tv shows that match that query.
  *
  *  Returns (promise) array of show objects: [show, show, ...].
@@ -30,7 +37,7 @@ async function getShowsByTerm(term: string): Promise<Show[]> {
     id: s.show.id,
     name: s.show.name,
     summary: s.show.summary,
-    image: s.show.image.medium || s.show.image.original || DEFAULT_IMG
+    image: s.show.image?.medium || s.show.image?.original || DEFAULT_IMG
   }));
   
   return shows;
@@ -39,7 +46,7 @@ async function getShowsByTerm(term: string): Promise<Show[]> {
 
 /** Given list of shows, create markup for each and to DOM */
 
-function populateShows(shows) {
+function populateShows(shows : Show[]) : void {
   $showsList.empty();
 
   for (let show of shows) {
@@ -47,8 +54,8 @@ function populateShows(shows) {
         `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img
-              src="http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg"
-              alt="Bletchly Circle San Francisco"
+              src="${show.image}"
+              alt="${show.name} Image"
               class="w-25 mr-3">
            <div class="media-body">
              <h5 class="text-primary">${show.name}</h5>
@@ -71,6 +78,7 @@ function populateShows(shows) {
 
 async function searchForShowAndDisplay() {
   const term = $("#searchForm-term").val();
+  // We know that term will always be a string
   const shows = await getShowsByTerm(term);
 
   $episodesArea.hide();
@@ -87,8 +95,39 @@ $searchForm.on("submit", async function (evt) {
  *      { id, name, season, number }
  */
 
-// async function getEpisodesOfShow(id) { }
+async function getEpisodesOfShow(id: number) : Promise<Episode[]> {
+  let response = await axios.get(`${BASE_URL}shows/${id}/episodes`);
 
-/** Write a clear docstring for this function... */
+  let episodes: Episode[] = response.data.map(e => ({
+    id: e.id,
+    name: e.name,
+    season: e.season,
+    number: e.number
+  }));
+  
+  return episodes;
+}
 
-// function populateEpisodes(episodes) { }
+/** Provided with an array of episodes info, 
+ *  populates it into the #episodesList part of the DOM. */
+
+function populateEpisodes(episodes: Episode[]) : void {
+  $episodesArea.empty();
+
+  for(let episode of episodes) {
+    let $episode = $(`
+      <li>
+        ${episode.name} (season ${episode.season}, number ${episode.number})
+      </li>`
+    );
+    $episodesArea.append($episode);
+  }
+}
+
+/**  */
+
+async function searchForEpisodesAndDisplay() {
+  
+}
+
+$showsList.on("click", ".Show-getEpisodes", searchForEpisodesAndDisplay);

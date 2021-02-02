@@ -12782,12 +12782,15 @@ function getShowsByTerm(term) {
                 case 0: return [4 /*yield*/, axios_1.default.get(BASE_URL + "search/shows?q=" + term)];
                 case 1:
                     response = _a.sent();
-                    shows = response.data.map(function (s) { return ({
-                        id: s.show.id,
-                        name: s.show.name,
-                        summary: s.show.summary,
-                        image: s.show.image.medium || s.show.image.original || DEFAULT_IMG
-                    }); });
+                    shows = response.data.map(function (s) {
+                        var _a, _b;
+                        return ({
+                            id: s.show.id,
+                            name: s.show.name,
+                            summary: s.show.summary,
+                            image: ((_a = s.show.image) === null || _a === void 0 ? void 0 : _a.medium) || ((_b = s.show.image) === null || _b === void 0 ? void 0 : _b.original) || DEFAULT_IMG
+                        });
+                    });
                     return [2 /*return*/, shows];
             }
         });
@@ -12798,7 +12801,7 @@ function populateShows(shows) {
     $showsList.empty();
     for (var _i = 0, shows_1 = shows; _i < shows_1.length; _i++) {
         var show = shows_1[_i];
-        var $show = $("<div data-show-id=\"" + show.id + "\" class=\"Show col-md-12 col-lg-6 mb-4\">\n         <div class=\"media\">\n           <img\n              src=\"http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg\"\n              alt=\"Bletchly Circle San Francisco\"\n              class=\"w-25 mr-3\">\n           <div class=\"media-body\">\n             <h5 class=\"text-primary\">" + show.name + "</h5>\n             <div><small>" + show.summary + "</small></div>\n             <button class=\"btn btn-outline-light btn-sm Show-getEpisodes\">\n               Episodes\n             </button>\n           </div>\n         </div>\n       </div>\n      ");
+        var $show = $("<div data-show-id=\"" + show.id + "\" class=\"Show col-md-12 col-lg-6 mb-4\">\n         <div class=\"media\">\n           <img\n              src=\"" + show.image + "\"\n              alt=\"" + show.name + " Image\"\n              class=\"w-25 mr-3\">\n           <div class=\"media-body\">\n             <h5 class=\"text-primary\">" + show.name + "</h5>\n             <div><small>" + show.summary + "</small></div>\n             <button class=\"btn btn-outline-light btn-sm Show-getEpisodes\">\n               Episodes\n             </button>\n           </div>\n         </div>\n       </div>\n      ");
         $showsList.append($show);
     }
 }
@@ -12839,9 +12842,44 @@ $searchForm.on("submit", function (evt) {
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
-// async function getEpisodesOfShow(id) { }
-/** Write a clear docstring for this function... */
-// function populateEpisodes(episodes) { }
+function getEpisodesOfShow(id) {
+    return __awaiter(this, void 0, void 0, function () {
+        var response, episodes;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, axios_1.default.get(BASE_URL + "shows/" + id + "/episodes")];
+                case 1:
+                    response = _a.sent();
+                    episodes = response.data.map(function (e) { return ({
+                        id: e.id,
+                        name: e.name,
+                        season: e.season,
+                        number: e.number
+                    }); });
+                    return [2 /*return*/, episodes];
+            }
+        });
+    });
+}
+/** Provided with an array of episodes info,
+ *  populates it into the #episodesList part of the DOM. */
+function populateEpisodes(episodes) {
+    $episodesArea.empty();
+    for (var _i = 0, episodes_1 = episodes; _i < episodes_1.length; _i++) {
+        var episode = episodes_1[_i];
+        var $episode = $("\n      <li>\n        " + episode.name + " (season " + episode.season + ", number " + episode.number + ")\n      </li>");
+        $episodesArea.append($episode);
+    }
+}
+/**  */
+function searchForEpisodesAndDisplay() {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/];
+        });
+    });
+}
+$showsList.on("click", ".Show-getEpisodes", searchForEpisodesAndDisplay);
 
 
 /***/ })
